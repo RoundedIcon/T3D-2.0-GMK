@@ -1565,6 +1565,11 @@ void ShapeBase::setDamageLevel(F32 damage)
       }
    }
 }
+F32 ShapeBase::getMaxDamage()
+{
+   return mDataBlock->maxDamage;
+}
+
 
 void ShapeBase::updateContainer()
 {
@@ -1630,11 +1635,6 @@ F32 ShapeBase::getDamageValue()
 {
    // Return a 0-1 damage value.
    return mDamage / mDataBlock->maxDamage;
-}
-
-F32 ShapeBase::getMaxDamage()
-{
-   return mDataBlock->maxDamage;
 }
 
 void ShapeBase::updateDamageLevel()
@@ -3897,6 +3897,13 @@ DefineEngineMethod( ShapeBase, setThreadPosition, bool, ( S32 slot, F32 pos ),,
    }
    return false;
 }
+
+/*//.logicking >>
+ConsoleMethod( ShapeBase, setThreadPosition, bool, 4, 4, "( int pSlot, float pos )" )
+{
+	return object->setThreadPosition( dAtoi( argv[2] ), dAtof( argv[3] ) );
+}
+//.logicking <<*/
 
 DefineEngineMethod( ShapeBase, stopThread, bool, ( S32 slot ),,
    "@brief Stop an animation thread.\n\n"

@@ -270,7 +270,10 @@ bool InteriorInstance::onAdd()
 
       // Get the interior collision geometry.
       ConcretePolyList polylist;
-      mInteriorRes->getDetailLevel(0)->buildPolyList( &polylist, Box3F(999999.0f), MatrixF::Identity, getScale() );
+	  //.logicking >> - create coll shape in world space
+	  polylist.setTransform(&getTransform(), getScale());
+	  mInteriorRes->getDetailLevel(0)->buildPolyList( &polylist, mObjBox /*getWorldBox()*/, MatrixF::Identity, getScale() );
+	  //.logicking <<
       polylist.triangulate();
 
       // Look out... this could possibly happen!
@@ -287,7 +290,8 @@ bool InteriorInstance::onAdd()
          PhysicsWorld *world = PHYSICSMGR->getWorld( isServerObject() ? "server" : "client" );
          mPhysicsRep = PHYSICSMGR->createBody();
          mPhysicsRep->init( colShape, 0, 0, this, world );
-         mPhysicsRep->setTransform( getTransform() );
+         //.logicking (commented)
+         //mPhysicsRep->setTransform( getTransform() );
       }
    }
 

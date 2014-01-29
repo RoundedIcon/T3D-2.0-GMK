@@ -23,7 +23,6 @@
 
 // 3D
 addEngineSrcDir('collision');
-addEngineSrcDir('interior');
 addEngineSrcDir('materials');
 addEngineSrcDir('lighting');
 addEngineSrcDir('lighting/common');
@@ -58,12 +57,21 @@ addEngineSrcDir('T3D/decal');
 addEngineSrcDir('T3D/sfx');
 addEngineSrcDir('T3D/gameBase');
 addEngineSrcDir('T3D/turret');
+addEngineSrcDir('T3D/logickingMechanics');
+addEngineSrcDir('T3D/logickingMechanics/physics');
+addEngineSrcDir('T3D/logickingMechanics/physics/bullet');
 
 global $TORQUE_HIFI_NET;
+global $TORQUE_EXTENDED_MOVE;
 if ( $TORQUE_HIFI_NET == true )
 {
    addProjectDefines( 'TORQUE_HIFI_NET' );
    addEngineSrcDir('T3D/gameBase/hifi');
+}
+elseif ( $TORQUE_EXTENDED_MOVE == true )
+{
+   addProjectDefines( 'TORQUE_EXTENDED_MOVE' );
+   addEngineSrcDir('T3D/gameBase/extended');
 }
 else
 	addEngineSrcDir('T3D/gameBase/std');

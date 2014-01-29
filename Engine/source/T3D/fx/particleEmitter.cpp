@@ -26,7 +26,6 @@
 #include "scene/sceneManager.h"
 #include "scene/sceneRenderState.h"
 #include "console/consoleTypes.h"
-#include "console/typeValidators.h"
 #include "core/stream/bitStream.h"
 #include "core/strings/stringUnit.h"
 #include "math/mRandom.h"
@@ -178,31 +177,31 @@ void ParticleEmitterData::initPersistFields()
 {
    addGroup( "ParticleEmitterData" );
 
-      addFieldV("ejectionPeriodMS", TYPEID< S32 >(), Offset(ejectionPeriodMS,   ParticleEmitterData), new IRangeValidator(1, 2047),
+      addField("ejectionPeriodMS", TYPEID< S32 >(), Offset(ejectionPeriodMS,   ParticleEmitterData),
          "Time (in milliseconds) between each particle ejection." );
 
-      addFieldV("periodVarianceMS", TYPEID< S32 >(), Offset(periodVarianceMS,   ParticleEmitterData), new IRangeValidator(0, 2047),
+      addField("periodVarianceMS", TYPEID< S32 >(), Offset(periodVarianceMS,   ParticleEmitterData),
          "Variance in ejection period, from 1 - ejectionPeriodMS." );
 
-      addFieldV( "ejectionVelocity", TYPEID< F32 >(), Offset(ejectionVelocity, ParticleEmitterData), new FRangeValidator(0, 655.35f),
+      addField( "ejectionVelocity", TYPEID< F32 >(), Offset(ejectionVelocity, ParticleEmitterData),
          "Particle ejection velocity." );
 
-      addFieldV( "velocityVariance", TYPEID< F32 >(), Offset(velocityVariance, ParticleEmitterData), new FRangeValidator(0, 163.83f),
+      addField( "velocityVariance", TYPEID< F32 >(), Offset(velocityVariance, ParticleEmitterData),
          "Variance for ejection velocity, from 0 - ejectionVelocity." );
 
-      addFieldV( "ejectionOffset", TYPEID< F32 >(), Offset(ejectionOffset, ParticleEmitterData), new FRangeValidator(0, 655.35f),
+      addField( "ejectionOffset", TYPEID< F32 >(), Offset(ejectionOffset, ParticleEmitterData),
          "Distance along ejection Z axis from which to eject particles." );
 
-      addFieldV( "thetaMin", TYPEID< F32 >(), Offset(thetaMin, ParticleEmitterData), new FRangeValidator(0, 180.0f),
+      addField( "thetaMin", TYPEID< F32 >(), Offset(thetaMin, ParticleEmitterData),
          "Minimum angle, from the horizontal plane, to eject from." );
 
-      addFieldV( "thetaMax", TYPEID< F32 >(), Offset(thetaMax, ParticleEmitterData), new FRangeValidator(0, 180.0f),
+      addField( "thetaMax", TYPEID< F32 >(), Offset(thetaMax, ParticleEmitterData),
          "Maximum angle, from the horizontal plane, to eject particles from." );
 
-      addFieldV( "phiReferenceVel", TYPEID< F32 >(), Offset(phiReferenceVel, ParticleEmitterData), new FRangeValidator(0, 360.0f),
+      addField( "phiReferenceVel", TYPEID< F32 >(), Offset(phiReferenceVel, ParticleEmitterData),
          "Reference angle, from the vertical plane, to eject particles from." );
 
-      addFieldV( "phiVariance", TYPEID< F32 >(), Offset(phiVariance, ParticleEmitterData), new FRangeValidator(0, 360.0f),
+      addField( "phiVariance", TYPEID< F32 >(), Offset(phiVariance, ParticleEmitterData),
          "Variance from the reference angle, from 0 - 360." );
 
       addField( "softnessDistance", TYPEID< F32 >(), Offset(softnessDistance, ParticleEmitterData),
@@ -303,8 +302,8 @@ void ParticleEmitterData::packData(BitStream* stream)
 {
    Parent::packData(stream);
 
-   stream->writeInt(ejectionPeriodMS, 11);      // must match limit on valid range in ParticleEmitterData::initPersistFields
-   stream->writeInt(periodVarianceMS, 11);
+   stream->writeInt(ejectionPeriodMS, 10);
+   stream->writeInt(periodVarianceMS, 10);
    stream->writeInt((S32)(ejectionVelocity * 100), 16);
    stream->writeInt((S32)(velocityVariance * 100), 14);
    if( stream->writeFlag( ejectionOffset != sgDefaultEjectionOffset ) )
@@ -353,8 +352,8 @@ void ParticleEmitterData::unpackData(BitStream* stream)
 {
    Parent::unpackData(stream);
 
-   ejectionPeriodMS = stream->readInt(11);
-   periodVarianceMS = stream->readInt(11);
+   ejectionPeriodMS = stream->readInt(10);
+   periodVarianceMS = stream->readInt(10);
    ejectionVelocity = stream->readInt(16) / 100.0f;
    velocityVariance = stream->readInt(14) / 100.0f;
    if( stream->readFlag() )
@@ -751,8 +750,9 @@ bool ParticleEmitter::onAdd()
    }
    else
    {
-      AssertFatal( false, "Error, could not find ClientMissionCleanup group" );
-      return false;
+      //.logicking made it warning instead of error, because otherwise we can't
+      //save/load player characters.
+      AssertWarn( false, "Error, could not find ClientMissionCleanup group" );
    }
 
    removeFromProcessList();
